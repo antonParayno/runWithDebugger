@@ -8,6 +8,7 @@
 			}).filter(function(element,i){
 				return i in array;
 			});
+			libraryStorage[libraryName] = callback.apply(this, libraryArray);
 		} else {
 			return libraryStorage[libraryName];
 		};	
