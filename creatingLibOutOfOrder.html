@@ -8,7 +8,7 @@
 			if(dependencyArray.length > 0){
 				var libraryArray = [];
 				var numberOfElements = 0;
-
+				// this block is to build the libraryArray that will be passed to callback with the use of apply method.
 				for(var i = 0; i < dependencyArray.length; i++){
 					if(i in dependencyArray){
 						var element = dependencyArray[i];
@@ -19,7 +19,7 @@
 						}
 					}
 				};
-
+				// this code block checks if the libraryNames are given if not the arguments will be save on a object.
 				if(libraryArray.length === numberOfElements){
 					libraryStorage[libraryName] = callback.apply(this, libraryArray);
 				} else {
@@ -34,11 +34,11 @@
 			};
 		} else {
 			var type = libraryStorage[libraryName].toString();
-
+			// if the data save is not an object just return it.
 			if(type !== '[object Object]'){
 				return libraryStorage[libraryName];
 			};
-
+			// used recursion to run the callback function and overwrite the data on libraryStorage[libraryName]
 			var libObject = libraryStorage[libraryName];
 			librarySystem(libObject.libraryName,libObject.dependencyArray,libObject.callback);
 			return libraryStorage[libraryName];
@@ -60,10 +60,10 @@ tests ({
 		eq(count,1);
 	},
 	'It should return the library when empty dependencyArray is given.': function(){
-		librarySystem('name', [], function(){
+		librarySystem('firstName', [], function(){
 			return 'anton';
 		});
-		var test = librarySystem('name')
+		var test = librarySystem('firstName')
 		eq(test, 'anton')
 	},
 	'It should return the library with the dependencies.': function(){
