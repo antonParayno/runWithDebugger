@@ -1,0 +1,143 @@
+<script src="sampleTest.js"></script>
+<script>
+(function(){
+	var libraryStorage = {};
+
+	function librarySystem(libraryName, dependencyArray, callback){
+		if(arguments.length > 1){
+			if(dependencyArray.length > 0){
+				var libraryArray = [];
+				var numberOfElements = 0;
+
+				for(var i = 0; i < dependencyArray.length; i++){
+					if(i in dependencyArray){
+						var element = dependencyArray[i];
+						var libName = libraryStorage[element];
+						numberOfElements++;
+						if(libName){
+							libraryArray.push(libName);
+						}
+					}
+				};
+
+				if(libraryArray.length === numberOfElements){
+					libraryStorage[libraryName] = callback.apply(this, libraryArray);
+				} else {
+					libraryStorage[libraryName] = {
+						libraryName: libraryName,
+						dependencyArray: dependencyArray,
+						callback: callback
+					};
+				};
+			} else {
+				libraryStorage[libraryName] = callback();
+			};
+		} else {
+			var type = libraryStorage[libraryName].toString();
+
+			if(type !== '[object Object]'){
+				return libraryStorage[libraryName];
+			};
+
+			var libObject = libraryStorage[libraryName];
+			librarySystem(libObject.libraryName,libObject.dependencyArray,libObject.callback);
+			return libraryStorage[libraryName];
+		};	
+	};
+	
+	window.librarySystem = librarySystem;
+})();
+tests ({
+	'It should have access to the function with one global variable': function(){
+		var functionInterface = Boolean(librarySystem);
+		eq(functionInterface, true);
+	},
+	'It should run the callback function when given': function(){
+		var count = 0;
+		librarySystem('test',[],function(){
+			count++;
+		});
+		eq(count,1);
+	},
+	'It should return the library when empty dependencyArray is given.': function(){
+		librarySystem('name', [], function(){
+			return 'anton';
+		});
+		var test = librarySystem('name')
+		eq(test, 'anton')
+	},
+	'It should return the library with the dependencies.': function(){
+		librarySystem('pangalan', [], function(){
+			return 'anton';
+		});
+		librarySystem('introduction',['pangalan'], function(name){
+			return 'My name is ' + name;
+		})
+		var check = librarySystem('introduction');
+		eq(check,'My name is anton');
+
+	},
+	'It should return or have access to all dependencies.': function(){
+		librarySystem('one', [], function(){
+			return '1';
+		});
+		librarySystem('two', [], function(){
+			return '2';
+		});
+		librarySystem('three', [], function(){
+			return '3';
+		});
+		librarySystem('oneTwoThree',['one','two','three'],function(one,two,three){
+			return one + two + three;
+		});
+		var count = librarySystem('oneTwoThree');
+		eq(count,'123')
+	},
+	'It should skip deleted or undefined elements in the dependencyArray.': function(){
+		librarySystem('four', [], function(){
+			return '4';
+		});
+		librarySystem('five', [], function(){
+			return '5';
+		});
+		librarySystem('six', [], function(){
+			return '6';
+		});
+		librarySystem('fourFiveSix',[,'four',,'five','six'],function(four,five,six){
+			return four + five + six;
+		});
+		var count = librarySystem('fourFiveSix');
+		eq(count,'456')
+	},
+	'It should accept library in any order': function(){
+		librarySystem('sevenEightNine',['seven','eight','nine'],function(seven,eight,nine){
+			return seven + eight + nine;
+		});
+		librarySystem('eight', [], function(){
+			return '8';
+		});
+		librarySystem('seven', [], function(){
+			return '7';
+		});
+		librarySystem('nine', [], function(){
+			return '9';
+		});
+		var count = librarySystem('sevenEightNine');
+		eq(count,'789')
+	},
+	'It should only run the callback function for each library once.': function(){
+		var count = 0;
+		librarySystem('once',['coding'],function(coding){
+			count++
+			return coding;
+		});
+		librarySystem('coding',[],function(){
+			return 'coding is fun';
+		});
+		librarySystem('once');
+		librarySystem('once');
+		librarySystem('once');
+		eq(count,1);
+	},
+});
+</script>

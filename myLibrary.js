@@ -13,5 +13,6 @@
 			return libraryStorage[libraryName];
 		};	
 	};
+	
 	window.librarySystem = librarySystem;
 })();
