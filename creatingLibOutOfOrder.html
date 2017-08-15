@@ -40,7 +40,7 @@
 			};
 			// used recursion to run the callback function and overwrite the data on libraryStorage[libraryName]
 			var libObject = libraryStorage[libraryName];
-			librarySystem(libObject.libraryName,libObject.dependencyArray,libObject.callback);
+			librarySystem(libObject.libraryName, libObject.dependencyArray, libObject.callback);
 			return libraryStorage[libraryName];
 		};	
 	};
