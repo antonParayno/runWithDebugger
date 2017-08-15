@@ -1,22 +1,29 @@
+<!-- 
+	The function saves libraries on one variable in the global namespace.
+	The function should accept one or three arguments which are the libraryName, dependencyArray, callback.
+	It should accept libraries and return them when called.
+	It should accept libraries with dependencies and return the library along with the dependency when called.
+	It should accept libraries in any order.
+	It should call the callback function only once for all the libraries.
+ -->
+
 <script src="sampleTest.js"></script>
 <script>
 (function(){
 	var libraryStorage = {};
 
 	function librarySystem(libraryName, dependencyArray, callback){
-		if(arguments.length > 1){
+		if(dependencyArray){
 			if(dependencyArray.length > 0){
 				var libraryArray = [];
 				var numberOfElements = 0;
 				// this block is to build the libraryArray that will be passed to callback with the use of apply method.
 				for(var i = 0; i < dependencyArray.length; i++){
-					if(i in dependencyArray){
-						var element = dependencyArray[i];
-						var libName = libraryStorage[element];
-						numberOfElements++;
-						if(libName){
-							libraryArray.push(libName);
-						}
+					var element = dependencyArray[i];
+					var libName = libraryStorage[element];
+					numberOfElements++;
+					if(libName){
+						libraryArray.push(libName);
 					}
 				};
 				// this code block checks if the libraryNames are given if not the arguments will be save on a object.
@@ -29,9 +36,11 @@
 						callback: callback
 					};
 				};
+
 			} else {
 				libraryStorage[libraryName] = callback();
 			};
+
 		} else {
 			var type = libraryStorage[libraryName].toString();
 			// if the data save is not an object just return it.
@@ -92,22 +101,6 @@ tests ({
 		});
 		var count = librarySystem('oneTwoThree');
 		eq(count,'123')
-	},
-	'It should skip deleted or undefined elements in the dependencyArray.': function(){
-		librarySystem('four', [], function(){
-			return '4';
-		});
-		librarySystem('five', [], function(){
-			return '5';
-		});
-		librarySystem('six', [], function(){
-			return '6';
-		});
-		librarySystem('fourFiveSix',[,'four',,'five','six'],function(four,five,six){
-			return four + five + six;
-		});
-		var count = librarySystem('fourFiveSix');
-		eq(count,'456')
 	},
 	'It should accept library in any order': function(){
 		librarySystem('sevenEightNine',['seven','eight','nine'],function(seven,eight,nine){
