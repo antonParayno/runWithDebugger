@@ -1,30 +1,46 @@
+<!-- 
+  The function is about higher order functions. e.g. functions calling functions.
+  THe runWithDebugger accepts two arguments, the first as the callback and an array for the second.
+  The runWithDebugger function just calls the callback function if no second argument is give.
+  The runWithDebugger function passes the second argument if given to the callback function.
+ -->
+
 <script src="sampleTest.js"></script>
 <script>
 
 function runWithDebugger(callback, callbackArgument){
-  if(arguments.length > 1){
-    if(typeof(callbackArgument) === 'string'){
-      return callback(callbackArgument);
-    }
-
-    var indexes = Object.keys(callbackArgument);
-
-    if(indexes.length === 0){
-      throw new TypeError('An empty array of arguments is given')
-    } else {
-
-      for(var i = 0; i < callbackArgument.length; i++){
-        if(!(i in callbackArgument)){
-          throw new TypeError('Undefined or deleted element is detected on argument array');
-        }
-      };
-
-      callbackWithArguments = callback.apply(this, callbackArgument);
-      return callbackWithArguments;
-    }
+  if(callbackArgument){
+    if(Array.isArray(callbackArgument)){
+      return callback.apply(this, callbackArgument);
+    };
   };
+
   return callback();
 };
+
+  // if(arguments.length > 1){
+  //   if(typeof(callbackArgument) === 'string'){
+  //     return callback(callbackArgument);
+  //   }
+
+  //   var indexes = Object.keys(callbackArgument);
+
+  //   if(indexes.length === 0){
+  //     throw new TypeError('An empty array of arguments is given')
+  //   } else {
+
+  //     for(var i = 0; i < callbackArgument.length; i++){
+  //       if(!(i in callbackArgument)){
+  //         throw new TypeError('Undefined or deleted element is detected on argument array');
+  //       }
+  //     };
+
+  //     callbackWithArguments = callback.apply(this, callbackArgument);
+  //     return callbackWithArguments;
+  //   }
+  // };
+  // return callback();
+  // };
 
 
 tests({
@@ -36,7 +52,7 @@ tests({
     eq(timesCallbackRan,1);
   },
   'It should pass argument into the callback function.': function(){
-    var callbackArgument = 'watch and code'
+    var callbackArgument = ['watch and code'];
     runWithDebugger(function(firstArgument){
       eq(firstArgument, 'watch and code')
     }, callbackArgument);
@@ -55,23 +71,23 @@ tests({
       eq(thirdArgument,'best!');
     }, callbackArgument);    
   },
-  'It should throw an error when the given argument array is empty.': function(){
-    var isTypeError = false;
-    try {
-      runWithDebugger(function(argument){},[]);
-    } catch(e){
-      isTypeError = (e instanceof TypeError);
-    }
-    eq(isTypeError, true);
-  },
-  'It should throw an error when deleted or undefined argument is given on the array.': function(){
-    var isTypeError = false;
-    try {
-      runWithDebugger(function(first,second){},[,2]);
-    } catch(e){
-      isTypeError = (e instanceof TypeError);
-    }
-    eq(isTypeError, true);
-  }  
+  // 'It should throw an error when the given argument array is empty.': function(){
+  //   var isTypeError = false;
+  //   try {
+  //     runWithDebugger(function(argument){},[]);
+  //   } catch(e){
+  //     isTypeError = (e instanceof TypeError);
+  //   }
+  //   eq(isTypeError, true);
+  // },
+  // 'It should throw an error when deleted or undefined argument is given on the array.': function(){
+  //   var isTypeError = false;
+  //   try {
+  //     runWithDebugger(function(first,second){},[,2]);
+  //   } catch(e){
+  //     isTypeError = (e instanceof TypeError);
+  //   }
+  //   eq(isTypeError, true);
+  // }  
 });
 </script>
