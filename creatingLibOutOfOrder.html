@@ -33,7 +33,8 @@
 					libraryStorage[libraryName] = {
 						libraryName: libraryName,
 						dependencyArray: dependencyArray,
-						callback: callback
+						callback: callback,
+						incompleteLibraryArray: true // this will make sure that callback wont run for the libraries with incomplete dependencies.
 					};
 				};
 
@@ -42,15 +43,19 @@
 			};
 
 		} else {
-			var type = libraryStorage[libraryName].toString();
-			// if the data save is not an object just return it.
-			if(type !== '[object Object]'){
+			var libObject = libraryStorage[libraryName];
+
+			if(!libObject){
+				throw new TypeError('Library Name is undefined');
+			};
+			// for the condition it will pass for libraries without dependencies. 
+			if(!libObject.incompleteLibraryArray){
+				return libraryStorage[libraryName];
+			} else {
+				// used recursion to run the callback function and overwrite the data on libraryStorage[libraryName]
+				librarySystem(libObject.libraryName, libObject.dependencyArray, libObject.callback);
 				return libraryStorage[libraryName];
 			};
-			// used recursion to run the callback function and overwrite the data on libraryStorage[libraryName]
-			var libObject = libraryStorage[libraryName];
-			librarySystem(libObject.libraryName, libObject.dependencyArray, libObject.callback);
-			return libraryStorage[libraryName];
 		};	
 	};
 	
@@ -118,6 +123,19 @@ tests ({
 		var count = librarySystem('sevenEightNine');
 		eq(count,'789')
 	},
+	'It should not run the callback for libraries with incomplete dependencies': function(){
+		var count = 0;
+		librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+			count++
+  			return name.name + ' works at ' + company.company;
+		});
+
+		librarySystem('company', [], function() {
+  			return {company:'Watch and Code'};
+		});
+		librarySystem('workBlurb');
+		eq(count,0);
+	},
 	'It should only run the callback function for each library once.': function(){
 		var count = 0;
 		librarySystem('once',['coding'],function(coding){
@@ -132,5 +150,14 @@ tests ({
 		librarySystem('once');
 		eq(count,1);
 	},
+	'It should throw and error when given library is undefined': function(){
+		var isTypeError = false;
+		try {
+			librarySystem('Testing')
+		} catch(e){
+			isTypeError = (e instanceof TypeError);
+		}
+		eq(isTypeError, true);
+	}
 });
 </script>
