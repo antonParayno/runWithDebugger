@@ -67,7 +67,7 @@ var TinyTest = {
                 console.log('%c' + testName + ' OK!', "color: green");
             } catch (e) {
                 failures++;
-                console.groupCollapsed('%c' + testName, "color: red");
+                console.groupCollapsed('%c' + testName + 'FAILED!', "color: red");
                 console.error(e.stack);
                 console.groupEnd();
             }

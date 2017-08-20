@@ -62,11 +62,11 @@
 	window.librarySystem = librarySystem;
 })();
 tests ({
-	'It should have access to the function with one global variable': function(){
+	'It should have access to the function with one global variable.': function(){
 		var functionInterface = Boolean(librarySystem);
 		eq(functionInterface, true);
 	},
-	'It should run the callback function when given': function(){
+	'It should run the callback function when given.': function(){
 		var count = 0;
 		librarySystem('test',[],function(){
 			count++;
@@ -107,7 +107,7 @@ tests ({
 		var count = librarySystem('oneTwoThree');
 		eq(count,'123')
 	},
-	'It should accept library in any order': function(){
+	'It should accept library in any order.': function(){
 		librarySystem('sevenEightNine',['seven','eight','nine'],function(seven,eight,nine){
 			return seven + eight + nine;
 		});
@@ -123,7 +123,7 @@ tests ({
 		var count = librarySystem('sevenEightNine');
 		eq(count,'789')
 	},
-	'It should not run the callback for libraries with incomplete dependencies': function(){
+	'It should not run the callback for libraries with incomplete dependencies.': function(){
 		var count = 0;
 		librarySystem('workBlurb', ['name', 'company'], function(name, company) {
 			count++
@@ -150,7 +150,7 @@ tests ({
 		librarySystem('once');
 		eq(count,1);
 	},
-	'It should throw and error when given library is undefined': function(){
+	'It should throw an error when given library is undefined.': function(){
 		var isTypeError = false;
 		try {
 			librarySystem('Testing')
